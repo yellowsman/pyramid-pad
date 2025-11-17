@@ -1,0 +1,68 @@
+/* style.css */
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    font-size: 24px;
+    border-bottom: 2px solid #ccc;
+}
+
+/* ピラミッド全体のコンテナ */
+#pyramid-container {
+    margin-top: 20px;
+}
+
+/* 各ノード（思考ブロック）のスタイル */
+.node {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 子ノードはインデント（字下げ）する */
+.node-children {
+    margin-left: 30px; /* 階層の深さ */
+    border-left: 2px solid #eee;
+    padding-left: 10px;
+}
+
+/* ノード内のテキスト入力欄 */
+.node-content {
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+.node-content:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* ノード操作ボタン */
+.node-controls {
+    margin-top: 8px;
+}
+.node-controls button {
+    margin-right: 5px;
+    font-size: 12px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+/* 関係性（演繹/帰納）のラベル */
+.relation-label {
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+.inductive { background-color: #28a745; } /* 帰納的 = 緑 */
+.deductive { background-color: #007bff; } /* 演繹的 = 青 */
