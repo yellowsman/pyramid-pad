@@ -6,7 +6,7 @@ let pyramidData = {
     relationType: 'none',
     children: []
 };
-let nodeIdCounter = 0; // ノード追加時にユニークIDを振るためのカウンター
+let nodeIdCounter = 0; 
 
 const container = document.getElementById('pyramid-container');
 const saveButton = document.getElementById('saveButton');
@@ -20,12 +20,10 @@ const resetButton = document.getElementById('resetButton');
  * @returns {HTMLElement} - 生成されたノードのHTML要素
  */
 function createNodeElement(nodeData, depth = 0) {
-    // 各ノードとその子ノード群をまとめるラッパー（ツリー構造の線のために必要）
     const nodeWrapper = document.createElement('div');
     nodeWrapper.classList.add('node-wrapper');
     nodeWrapper.dataset.id = nodeData.id;
 
-    // ノード本体（ボックス部分）
     const node = document.createElement('div');
     node.classList.add('node');
 
@@ -39,22 +37,20 @@ function createNodeElement(nodeData, depth = 0) {
         relationLabel.textContent = '演繹的';
         relationLabel.classList.add('deductive');
     } else {
-        relationLabel.style.display = 'none'; // rootノードなどには表示しない
+        relationLabel.style.display = 'none'; 
     }
     node.appendChild(relationLabel);
 
     // テキスト入力欄
-    const contentInput = document.createElement('textarea'); // inputからtextareaに変更
+    const contentInput = document.createElement('textarea'); 
     contentInput.classList.add('node-content');
     contentInput.value = nodeData.content;
-    contentInput.rows = 2; // 初期行数
-    contentInput.addEventListener('input', (e) => { // 'change'から'input'に変更して即時反映
+    contentInput.rows = 2; 
+    contentInput.addEventListener('input', (e) => { 
         nodeData.content = e.target.value;
-        // テキストエリアの高さ自動調整
         e.target.style.height = 'auto';
         e.target.style.height = (e.target.scrollHeight) + 'px';
     });
-    // 初回描画時に高さを調整
     setTimeout(() => {
         contentInput.style.height = 'auto';
         contentInput.style.height = (contentInput.scrollHeight) + 'px';
@@ -66,7 +62,7 @@ function createNodeElement(nodeData, depth = 0) {
     controls.classList.add('node-controls');
 
     const addInductiveButton = document.createElement('button');
-    addInductiveButton.textContent = '＋子(帰納)';
+    addInductiveButton.textContent = '＋子を追加 (帰納)';
     addInductiveButton.onclick = () => {
         if (depth >= 19) {
             alert('階層の上限（20階層）に達しました。');
@@ -76,7 +72,7 @@ function createNodeElement(nodeData, depth = 0) {
     };
 
     const addDeductiveButton = document.createElement('button');
-    addDeductiveButton.textContent = '＋子(演繹)';
+    addDeductiveButton.textContent = '＋子を追加 (演繹)';
     addDeductiveButton.onclick = () => {
         if (depth >= 19) {
             alert('階層の上限（20階層）に達しました。');
@@ -105,6 +101,7 @@ function createNodeElement(nodeData, depth = 0) {
     if (nodeData.children && nodeData.children.length > 0) {
         const childrenContainer = document.createElement('div');
         childrenContainer.classList.add('node-children-container');
+        
         if (nodeData.children.length > 1) {
              childrenContainer.classList.add('multiple-children');
         } else {
@@ -127,7 +124,23 @@ function render() {
     container.appendChild(rootElement);
 }
 
+// --- 子ノードの混在禁止ロジック ---
 function addChildNode(parentNodeData, relationType) {
+    
+    // 既に子ノードが存在するかチェック
+    if (parentNodeData.children.length > 0) {
+        // 既存の子ノード（最初の子）の関係タイプを取得
+        const existingRelationType = parentNodeData.children[0].relationType;
+        
+        // 新しく追加しようとするノードの関係タイプが、既存のものと異なるかチェック
+        if (existingRelationType !== relationType) {
+            // 異なる場合はアラートを表示して処理を中断
+            alert('1つの親ノード配下に「演繹的」と「帰納的」な子ノードを混在させることはできません。');
+            return; // ノード追加をキャンセル
+        }
+    }
+
+    // 従来のノード追加処理
     nodeIdCounter++;
     const newNode = {
         id: `node_${nodeIdCounter}`,
@@ -140,7 +153,7 @@ function addChildNode(parentNodeData, relationType) {
 }
 
 function deleteNode(nodeId) {
-    if (!confirm('このノードと、その全ての子ノードを削除します。よろしいですか？')) {
+    if (!confirm('このノードと、その全ての子ノードを削除します。よろしいですか？')) { 
         return;
     }
 
@@ -152,9 +165,11 @@ function deleteNode(nodeId) {
         const targetIndex = currentNode.children.findIndex(child => child.id === targetId);
         
         if (targetIndex !== -1) {
+            // 見つかった
             currentNode.children.splice(targetIndex, 1);
             return true;
         } else {
+            // 見つからなかったので、子ノードをさらに深く探す
             for (const child of currentNode.children) {
                 if (findAndRemove(child, targetId)) {
                     return true;
@@ -165,7 +180,7 @@ function deleteNode(nodeId) {
     }
 
     findAndRemove(pyramidData, nodeId);
-    render();
+    render(); // データを変更したので画面を再描画
 }
 
 // --- 保存・読込機能 (LocalStorage) ---
@@ -180,7 +195,7 @@ saveButton.addEventListener('click', () => {
 });
 
 loadButton.addEventListener('click', () => {
-    if (!confirm('保存したデータを読み込みます。現在の編集内容は失われますが、よろしいですか？')) {
+    if (!confirm('保存したデータを読み込みます。現在の編集内容は失われますが、よろしいですか？')) { 
         return;
     }
     
@@ -188,8 +203,6 @@ loadButton.addEventListener('click', () => {
     if (savedData) {
         try {
             pyramidData = JSON.parse(savedData);
-            // 保存したデータから最大のnodeIdCounterを再設定する
-            // 簡略化のため、ここでは既存のノードIDをスキャンせず、新しいタイムスタンプを使用
             nodeIdCounter = Date.now(); 
             render();
             alert('データを読み込みました。');
@@ -202,7 +215,7 @@ loadButton.addEventListener('click', () => {
 });
 
 resetButton.addEventListener('click', () => {
-    if (!confirm('データをリセットします。よろしいですか？')) {
+    if (!confirm('データをリセットします。よろしいですか？')) { 
         return;
     }
     pyramidData = {
@@ -217,4 +230,5 @@ resetButton.addEventListener('click', () => {
 
 
 // --- 初期起動 ---
+// ページが読み込まれたら、最初の描画を行う
 render();
