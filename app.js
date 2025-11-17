@@ -8,7 +8,9 @@ let pyramidData = {
 };
 let nodeIdCounter = 0; 
 
+// ★変更: DOM要素にタイトルを追加
 const container = document.getElementById('pyramid-container');
+const mainTitle = document.getElementById('main-title'); // h1要素
 const saveButton = document.getElementById('saveButton');
 const loadButton = document.getElementById('loadButton');
 const resetButton = document.getElementById('resetButton');
@@ -124,23 +126,18 @@ function render() {
     container.appendChild(rootElement);
 }
 
-// --- 子ノードの混在禁止ロジック ---
+// --- 子ノードの混在禁止ロジック (維持) ---
 function addChildNode(parentNodeData, relationType) {
     
-    // 既に子ノードが存在するかチェック
     if (parentNodeData.children.length > 0) {
-        // 既存の子ノード（最初の子）の関係タイプを取得
         const existingRelationType = parentNodeData.children[0].relationType;
         
-        // 新しく追加しようとするノードの関係タイプが、既存のものと異なるかチェック
         if (existingRelationType !== relationType) {
-            // 異なる場合はアラートを表示して処理を中断
             alert('1つの親ノード配下に「演繹的」と「帰納的」な子ノードを混在させることはできません。');
-            return; // ノード追加をキャンセル
+            return; 
         }
     }
 
-    // 従来のノード追加処理
     nodeIdCounter++;
     const newNode = {
         id: `node_${nodeIdCounter}`,
@@ -165,11 +162,9 @@ function deleteNode(nodeId) {
         const targetIndex = currentNode.children.findIndex(child => child.id === targetId);
         
         if (targetIndex !== -1) {
-            // 見つかった
             currentNode.children.splice(targetIndex, 1);
             return true;
         } else {
-            // 見つからなかったので、子ノードをさらに深く探す
             for (const child of currentNode.children) {
                 if (findAndRemove(child, targetId)) {
                     return true;
@@ -180,20 +175,27 @@ function deleteNode(nodeId) {
     }
 
     findAndRemove(pyramidData, nodeId);
-    render(); // データを変更したので画面を再描画
+    render(); 
 }
 
 // --- 保存・読込機能 (LocalStorage) ---
 
+// ★変更: タイトルも保存
 saveButton.addEventListener('click', () => {
     try {
-        localStorage.setItem('pyramidToolData', JSON.stringify(pyramidData));
+        // タイトルとピラミッドデータをオブジェクトにまとめて保存
+        const dataToSave = {
+            title: mainTitle.textContent,
+            pyramid: pyramidData
+        };
+        localStorage.setItem('pyramidToolData', JSON.stringify(dataToSave));
         alert('データをブラウザに保存しました。');
     } catch (e) {
         alert('データの保存に失敗しました。');
     }
 });
 
+// ★変更: タイトルも読込
 loadButton.addEventListener('click', () => {
     if (!confirm('保存したデータを読み込みます。現在の編集内容は失われますが、よろしいですか？')) { 
         return;
@@ -202,7 +204,19 @@ loadButton.addEventListener('click', () => {
     const savedData = localStorage.getItem('pyramidToolData');
     if (savedData) {
         try {
-            pyramidData = JSON.parse(savedData);
+            const loadedData = JSON.parse(savedData);
+            
+            // データの形式をチェック（新旧互換性のため）
+            if (loadedData && loadedData.pyramid && typeof loadedData.title === 'string') {
+                // 新形式: { title: "...", pyramid: {...} }
+                pyramidData = loadedData.pyramid;
+                mainTitle.textContent = loadedData.title;
+            } else {
+                // 旧形式: {...} (pyramidDataのみ)
+                pyramidData = loadedData;
+                mainTitle.textContent = 'ピラミッド思考ツール'; // 旧データの場合はタイトルをリセット
+            }
+
             nodeIdCounter = Date.now(); 
             render();
             alert('データを読み込みました。');
@@ -214,21 +228,25 @@ loadButton.addEventListener('click', () => {
     }
 });
 
+// ★変更: タイトルもリセット
 resetButton.addEventListener('click', () => {
     if (!confirm('データをリセットします。よろしいですか？')) { 
         return;
     }
+    // ピラミッドデータのリセット
     pyramidData = {
         id: 'root',
         content: 'ここに頂点となる主張や課題を書く',
         relationType: 'none',
         children: []
     };
+    // タイトルのリセット
+    mainTitle.textContent = 'ピラミッド思考ツール';
+    
     nodeIdCounter = 0;
     render();
 });
 
 
 // --- 初期起動 ---
-// ページが読み込まれたら、最初の描画を行う
 render();

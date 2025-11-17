@@ -13,7 +13,16 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* コントロールボタン群 */
+/* ★追加: 編集可能なタイトルにフォーカスが当たった時のスタイル */
+h1[contenteditable="true"]:focus {
+    outline: 2px solid #007bff;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+/* ★追加ここまで */
+
 .controls {
     margin-bottom: 20px;
 }
@@ -31,20 +40,16 @@ h1 {
     background-color: #0056b3;
 }
 
-/* ピラミッド全体のコンテナ */
 #pyramid-container {
     margin-top: 20px;
-    /* ピラミッドの中心を揃えるため、フレックスボックスを使用 */
     display: flex;
     justify-content: center;
 }
 
-/* 各ノード（思考ブロック）のスタイル */
 .node-wrapper {
-    /* 子ノードを横並びにするためのコンテナ */
     position: relative;
-    padding-top: 20px; /* 親ノードからの縦線のためにスペースを確保 */
-    text-align: center; /* 子ノードのテキスト中央寄せ */
+    padding-top: 20px;
+    text-align: center;
 }
 
 .node {
@@ -52,15 +57,15 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 10px 15px;
-    margin: 10px auto; /* 中央寄せ */
+    margin: 10px auto;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    display: inline-block; /* 横幅を内容に合わせる */
-    min-width: 200px; /* 最小幅 */
-    max-width: 300px; /* 最大幅 */
-    text-align: left; /* テキストは左寄せ */
+    display: inline-block;
+    min-width: 200px;
+    max-width: 300px;
+    text-align: left;
 }
 
-/* 親から子への接続線 */
+/* 親から子への接続線 (縦線) */
 .node-wrapper:not(:first-child)::before {
     content: '';
     position: absolute;
@@ -68,72 +73,65 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 20px; /* 親ノードからの縦線の長さ */
-    background-color: #aaa;
-}
-
-
-/* 子ノードのグループのラッパー */
-.node-children-container {
-    display: flex; /* 子ノードを横並びにする */
-    justify-content: center; /* 中央寄せ */
-    margin-top: 20px; /* 親ノードとの間隔 */
-    position: relative;
+    height: 20px;
+    background-color: #aaa; /* デフォルト色 */
 }
 
 /* 子ノードへの横線（親ノードの真下から分岐する線） */
 .node-children-container::before {
     content: '';
     position: absolute;
-    top: -20px; /* 親ノードの縦線が来る位置 */
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 20px; /* 親から横線への縦線の長さ */
-    background-color: #aaa;
+    height: 20px;
+    background-color: #aaa; /* デフォルト色 */
 }
 
 /* 子ノード間の横線 */
 .node-children-container:not(:empty)::after {
     content: '';
     position: absolute;
-    top: -20px; /* 親ノードの縦線が来る位置 */
+    top: -20px;
     height: 2px;
-    background-color: #aaa;
-    z-index: -1; /* ノードの下に表示 */
+    background-color: #aaa; /* デフォルト色 */
+    z-index: -1;
 }
 
-/* 複数の子ノードがある場合の横線の調整 */
+.node-children-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    position: relative;
+}
+
 .node-children-container.multiple-children::after {
-    left: 0; /* 左端から右端まで */
+    left: 0;
     right: 0;
     transform: none;
     width: 100%;
 }
-/* 子が単一の場合は横線は不要 */
 .node-children-container.single-child::after {
     display: none;
 }
 
-
-/* ノード内のテキスト入力欄 */
 .node-content {
-    width: calc(100% - 16px); /* padding分を考慮 */
+    width: calc(100% - 16px);
     padding: 8px;
     border: 1px solid #eee;
     border-radius: 4px;
     font-size: 14px;
-    box-sizing: border-box; /* paddingとborderをwidthに含める */
+    box-sizing: border-box;
 }
 .node-content:focus {
     border-color: #007bff;
     outline: none;
 }
 
-/* ノード操作ボタン */
 .node-controls {
     margin-top: 10px;
-    text-align: right; /* ボタンを右寄せ */
+    text-align: right;
 }
 .node-controls button {
     margin-left: 5px;
@@ -153,7 +151,6 @@ h1 {
     cursor: not-allowed;
 }
 
-/* 関係性（演繹/帰納）のラベル */
 .relation-label {
     font-size: 10px;
     font-weight: bold;
@@ -161,8 +158,8 @@ h1 {
     padding: 2px 6px;
     border-radius: 4px;
     margin-right: 5px;
-    display: inline-block; /* テキストと同じ行に */
-    margin-bottom: 5px; /* 下の要素との間隔 */
+    display: inline-block;
+    margin-bottom: 5px;
 }
-.inductive { background-color: #28a745; } /* 帰納的 = 緑 */
-.deductive { background-color: #007bff; } /* 演繹的 = 青 */
+.inductive { background-color: #28a745; }
+.deductive { background-color: #007bff; }
