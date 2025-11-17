@@ -10,14 +10,23 @@
     <h1 id="main-title" contenteditable="true">ピラミッド思考ツール</h1>
 
     <div class="controls">
-        <button id="saveButton">ローカルに保存</button>
-        <button id="loadButton">ローカルから読込</button>
+        <button id="saveButton">現在のタイトルで保存</button>
+        <button id="loadButton">保存済みデータを読込</button>
         <button id="resetButton">リセット</button>
     </div>
 
     <div id="pyramid-container">
         </div>
 
+    <div id="load-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>保存済みデータ一覧</h2>
+            <p>読み込みたいタイトルをクリックしてください。</p>
+            <ul id="load-list-container">
+                </ul>
+            <button id="modal-close-btn">閉じる</button>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
